@@ -9,7 +9,8 @@ import os
 import requests
 
 # Crear una instancia de Socket.IO
-sio = socketio.Server(cors_allowed_origins="*")
+#sio = socketio.Server(cors_allowed_origins="*")
+sio = socketio.Server(cors_allowed_origins="https://connectapp-rmk5.onrender.com")
 app = socketio.WSGIApp(sio)
 
 # Cargar credenciales y conectar con Firebase
