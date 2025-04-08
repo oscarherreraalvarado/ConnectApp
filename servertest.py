@@ -9,8 +9,8 @@ import os
 import requests
 
 # Crear una instancia de Socket.IO
-#sio = socketio.Server(cors_allowed_origins="*")
-sio = socketio.Server(cors_allowed_origins="https://connectapp-rmk5.onrender.com")
+sio = socketio.Server(cors_allowed_origins="*")
+#sio = socketio.Server(cors_allowed_origins="https://connectapp-rmk5.onrender.com")
 app = socketio.WSGIApp(sio)
 
 # Cargar credenciales y conectar con Firebase
@@ -337,10 +337,32 @@ def obtener_mensajes(sid, data):
         print("Error en obtener_mensajes:", e)
         sio.emit("obtener_mensajes_respuesta", {"mensajes": []}, to=sid)
 
+def obtener_usuarios_prueba():
+    try:
+        usuarios = []
+        page = auth.list_users()
+        while page:
+            for user in page.users:
+                usuarios.append({
+                    "uid": user.uid,
+                    "email": user.email,
+                    "displayName": user.display_name or "Sin nombre"
+                })
+            page = page.next_page_token and auth.list_users(page.next_page_token)
 
+        return {
+            "status": "success",
+            "usuarios": usuarios
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e)
+        }
 
 # Ejecutar el servidor
 if __name__ == "__main__":
+    print(obtener_usuarios_prueba())
     port = int(os.environ.get("PORT", 5000))
     eventlet.wsgi.server(eventlet.listen(("", port)), app)
     print(f"Servidor corriendo en el puerto {port}")
